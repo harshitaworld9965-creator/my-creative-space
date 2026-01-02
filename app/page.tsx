@@ -167,9 +167,8 @@ export default function Home() {
             </p>
 
             <h1 className="mb-4 font-['Caveat'] text-6xl font-bold text-gray-800 md:text-8xl">
-              Harshita
-              <span className="block text-5xl md:text-7xl">Deswal</span>
-            </h1>
+  Harshita
+</h1>
 
             <p className="mx-auto max-w-2xl text-lg italic text-gray-700">
               A place where ideas rest, wander, and sometimes take shape —
