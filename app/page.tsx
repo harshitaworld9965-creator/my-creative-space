@@ -20,7 +20,7 @@ export default function Home() {
           <h1 className="mb-6 font-serif text-7xl font-bold tracking-tight">
             Hello, I'm{' '}
             <span className="bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
-              [Your Name]
+              Harshita
             </span>
           </h1>
           
