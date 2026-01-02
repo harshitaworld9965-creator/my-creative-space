@@ -10,7 +10,7 @@ import {
   Moon,
 } from 'lucide-react';
 
-/* -------- real studio time (hydration-safe) -------- */
+/* -------- real studio time -------- */
 const getFormattedTime = () => {
   return new Date().toLocaleTimeString([], {
     hour: 'numeric',
@@ -22,7 +22,7 @@ const getFormattedTime = () => {
 function DoodleDrift() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const lastPoint = useRef<{ x: number; y: number } | null>(null);
-  const hue = useRef(Math.random() * 360);
+  const hue = useRef(220); // fixed cool hue for night theme
   const [isDrawing, setIsDrawing] = useState(false);
 
   useEffect(() => {
@@ -52,7 +52,7 @@ function DoodleDrift() {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    ctx.strokeStyle = `hsla(${hue.current}, 60%, 65%, 0.4)`;
+    ctx.strokeStyle = `hsla(${hue.current}, 70%, 75%, 0.35)`;
 
     if (!lastPoint.current) {
       lastPoint.current = { x, y };
@@ -74,14 +74,14 @@ function DoodleDrift() {
   };
 
   return (
-    <div className="rounded-3xl bg-white/80 p-6 backdrop-blur-lg shadow-lg">
-      <p className="mb-3 font-mono text-xs uppercase tracking-widest text-gray-500">
+    <div className="rounded-3xl bg-white/10 p-6 backdrop-blur-xl shadow-lg border border-white/10">
+      <p className="mb-3 font-mono text-xs uppercase tracking-widest text-white/60">
         a small thing to play with
       </p>
 
       <canvas
         ref={canvasRef}
-        className="h-40 w-full rounded-xl bg-gradient-to-br from-rose-50 to-amber-50 touch-none"
+        className="h-40 w-full rounded-xl bg-gradient-to-br from-indigo-900/40 to-slate-900/40 touch-none"
         onPointerDown={() => {
           setIsDrawing(true);
           lastPoint.current = null;
@@ -97,14 +97,14 @@ function DoodleDrift() {
         onPointerMove={handlePointerMove}
       />
 
-      <p className="mt-3 text-sm italic text-gray-600">
+      <p className="mt-3 text-sm italic text-white/60">
         No goal. Just let your hand wander.
       </p>
     </div>
   );
 }
 
-/* -------- Piano Ambience Toggle -------- */
+/* -------- Piano ambience -------- */
 function PianoToggle() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [playing, setPlaying] = useState(false);
@@ -116,7 +116,7 @@ function PianoToggle() {
       audioRef.current.pause();
       setPlaying(false);
     } else {
-      audioRef.current.volume = 0.22; // softer than rain
+      audioRef.current.volume = 0.2;
       audioRef.current.loop = true;
       audioRef.current.play();
       setPlaying(true);
@@ -127,9 +127,9 @@ function PianoToggle() {
     <div className="mt-4 flex justify-center">
       <button
         onClick={toggle}
-        className="inline-flex items-center gap-2 rounded-full bg-white/60 px-4 py-2 text-sm text-gray-700 backdrop-blur-sm shadow hover:bg-white/80"
+        className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm text-white/80 backdrop-blur-md border border-white/20 hover:bg-white/20"
       >
-        <Music className="h-4 w-4 text-indigo-600" />
+        <Music className="h-4 w-4 text-indigo-300" />
         {playing ? 'piano · on' : 'piano · off'}
       </button>
 
@@ -154,41 +154,45 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen p-4 md:p-8">
-      <div className="fixed inset-0 -z-10 bg-gradient-to-br from-white via-amber-50/70 to-rose-50/80" />
+    <div className="min-h-screen p-4 md:p-8 text-white">
+      {/* Night sky background */}
+      <div
+        className="fixed inset-0 -z-10 bg-cover bg-center"
+        style={{ backgroundImage: "url('/images/night-sky.jpg')" }}
+      />
+      <div className="fixed inset-0 -z-10 bg-gradient-to-b from-black/40 via-indigo-950/70 to-black/90" />
 
       <div className="mx-auto max-w-6xl text-center">
 
         {/* Header */}
         <div className="mb-16 mt-10">
-          <div className="inline-block rounded-3xl bg-white/80 p-8 backdrop-blur-lg shadow-xl">
-            <p className="mb-2 font-mono text-sm uppercase tracking-widest text-cyan-700">
+          <div className="inline-block rounded-3xl bg-black/40 p-8 backdrop-blur-xl shadow-xl border border-white/10">
+            <p className="mb-2 font-mono text-sm uppercase tracking-widest text-indigo-300">
               · from my late-night studio ·
             </p>
 
-            <h1 className="mb-4 font-['Caveat'] text-6xl font-bold text-gray-800 md:text-8xl">
-  Harshita
-</h1>
+            <h1 className="mb-4 font-['Caveat'] text-6xl font-bold md:text-8xl">
+              Harshita
+            </h1>
 
-            <p className="mx-auto max-w-2xl text-lg italic text-gray-700">
+            <p className="mx-auto max-w-2xl text-lg italic text-white/80">
               A place where ideas rest, wander, and sometimes take shape —
               through words, sketches, experiments, and quiet attention.
             </p>
           </div>
 
           {/* Studio Time */}
-          <div className="mt-6 inline-flex items-center gap-3 rounded-full bg-white/60 px-6 py-3 backdrop-blur-sm shadow-md">
-            <Moon className="h-5 w-5 text-indigo-600" />
-            <span className="font-mono text-sm text-gray-700">
+          <div className="mt-6 inline-flex items-center gap-3 rounded-full bg-black/40 px-6 py-3 backdrop-blur-md border border-white/10">
+            <Moon className="h-5 w-5 text-indigo-300" />
+            <span className="font-mono text-sm text-white/80">
               Studio time:{' '}
-              <span className="text-indigo-600">
+              <span className="text-indigo-200">
                 {mounted ? studioTime : '—'}
               </span>
             </span>
-            <Coffee className="h-5 w-5 text-amber-700" />
+            <Coffee className="h-5 w-5 text-amber-300" />
           </div>
 
-          {/* Piano ambience */}
           <PianoToggle />
         </div>
 
@@ -199,30 +203,23 @@ export default function Home() {
 
         {/* Corners */}
         <div className="grid gap-8 md:grid-cols-2">
-          <Corner href="/doodles" title="Doodle Wall" />
-          <Corner href="/writing" title="Midnight Musings" />
-          <Corner href="/code" title="Code Playground" />
-          <Corner href="/current" title="Current Inspirations" />
+          <Corner title="Doodle Wall" href="/doodles" />
+          <Corner title="Midnight Musings" href="/writing" />
+          <Corner title="Code Playground" href="/code" />
+          <Corner title="Current Inspirations" href="/current" />
         </div>
       </div>
     </div>
   );
 }
 
-/* -------- Reusable Corner -------- */
-function Corner({
-  href,
-  title,
-}: {
-  href: string;
-  title: string;
-}) {
+function Corner({ title, href }: { title: string; href: string }) {
   return (
     <div
       onClick={() => (window.location.href = href)}
-      className="cursor-pointer rounded-3xl bg-white/90 p-8 shadow-lg"
+      className="cursor-pointer rounded-3xl bg-black/40 p-8 backdrop-blur-xl border border-white/10 hover:bg-black/50 transition"
     >
-      <h3 className="font-['Caveat'] text-4xl font-bold text-gray-800">
+      <h3 className="font-['Caveat'] text-4xl font-bold text-white">
         {title}
       </h3>
     </div>
