@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   Music,
   BookOpen,
@@ -19,14 +19,98 @@ const getFormattedTime = () => {
   });
 };
 
+/* -------- Doodle Drift component -------- */
+function DoodleDrift() {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [isDrawing, setIsDrawing] = useState(false);
+  const lastPoint = useRef<{ x: number; y: number } | null>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const resize = () => {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    };
+
+    resize();
+    window.addEventListener('resize', resize);
+
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.lineWidth = 2;
+
+    return () => window.removeEventListener('resize', resize);
+  }, []);
+
+  const draw = (x: number, y: number) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    ctx.strokeStyle = `hsla(${Math.random() * 360}, 60%, 65%, 0.4)`;
+
+    if (!lastPoint.current) {
+      lastPoint.current = { x, y };
+      return;
+    }
+
+    ctx.beginPath();
+    ctx.moveTo(lastPoint.current.x, lastPoint.current.y);
+    ctx.lineTo(x, y);
+    ctx.stroke();
+
+    lastPoint.current = { x, y };
+  };
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!isDrawing) return;
+    const rect = (e.target as HTMLCanvasElement).getBoundingClientRect();
+    draw(e.clientX - rect.left, e.clientY - rect.top);
+  };
+
+  return (
+    <div className="rounded-3xl bg-white/80 p-6 backdrop-blur-lg shadow-lg">
+      <p className="mb-3 font-mono text-xs uppercase tracking-widest text-gray-500">
+        a small thing to play with
+      </p>
+      <canvas
+        ref={canvasRef}
+        className="h-40 w-full rounded-xl bg-gradient-to-br from-rose-50 to-amber-50 touch-none"
+        onPointerDown={() => {
+          setIsDrawing(true);
+          lastPoint.current = null;
+        }}
+        onPointerUp={() => {
+          setIsDrawing(false);
+          lastPoint.current = null;
+        }}
+        onPointerLeave={() => {
+          setIsDrawing(false);
+          lastPoint.current = null;
+        }}
+        onPointerMove={handlePointerMove}
+      />
+      <p className="mt-3 text-sm italic text-gray-600">
+        No goal. Just let your hand wander.
+      </p>
+    </div>
+  );
+}
+
 export default function Home() {
   const [studioTime, setStudioTime] = useState(getFormattedTime());
 
   useEffect(() => {
     const interval = setInterval(() => {
       setStudioTime(getFormattedTime());
-    }, 60000); // update once per minute
-
+    }, 60000);
     return () => clearInterval(interval);
   }, []);
 
@@ -35,20 +119,14 @@ export default function Home() {
 
       {/* Background */}
       <div className="fixed inset-0 -z-10">
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url(/images/studio-bg.jpg)' }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-br from-white/85 via-amber-50/70 to-rose-50/80" />
+        <div className="absolute inset-0 bg-gradient-to-br from-white via-amber-50/70 to-rose-50/80" />
       </div>
 
       <div className="relative mx-auto max-w-6xl">
 
         {/* Header */}
         <div className="mb-16 mt-10 text-center">
-          <div className="mx-auto mb-6 h-6 w-40 rounded-full bg-gradient-to-r from-amber-200/60 via-rose-200/60 to-cyan-200/60" />
-
-          <div className="inline-block rounded-3xl bg-white/70 p-8 backdrop-blur-lg shadow-xl">
+          <div className="inline-block rounded-3xl bg-white/80 p-8 backdrop-blur-lg shadow-xl">
             <p className="mb-2 font-mono text-sm uppercase tracking-widest text-cyan-700">
               · from my late-night studio ·
             </p>
@@ -58,16 +136,6 @@ export default function Home() {
               <span className="block text-5xl md:text-7xl">Deswal</span>
             </h1>
 
-            <div className="mx-auto mb-6 flex max-w-md items-center justify-center gap-3">
-              <div className="h-px flex-1 bg-gradient-to-r from-transparent to-rose-300/60" />
-              <Sparkles className="h-5 w-5 text-amber-500" />
-              <span className="font-mono text-sm text-gray-600">
-                a cozy, curious studio
-              </span>
-              <Sparkles className="h-5 w-5 text-amber-500" />
-              <div className="h-px flex-1 bg-gradient-to-l from-transparent to-cyan-300/60" />
-            </div>
-
             <p className="mx-auto max-w-2xl text-lg italic text-gray-700">
               This is a place where ideas rest, wander, and occasionally take
               shape — through words, sketches, experiments, and quiet attention.
@@ -75,7 +143,7 @@ export default function Home() {
           </div>
 
           {/* Studio time */}
-          <div className="mt-8 inline-flex items-center gap-3 rounded-full bg-white/60 px-6 py-3 backdrop-blur-sm shadow-md">
+          <div className="mt-6 inline-flex items-center gap-3 rounded-full bg-white/60 px-6 py-3 backdrop-blur-sm shadow-md">
             <Moon className="h-5 w-5 text-indigo-600" />
             <span className="font-mono text-sm text-gray-700">
               Studio time:{' '}
@@ -83,25 +151,16 @@ export default function Home() {
             </span>
             <Coffee className="h-5 w-5 text-amber-700" />
           </div>
+        </div>
 
-          {/* Quiet navigation */}
-          <div className="mt-6 flex justify-center gap-6">
-            <a href="/writing" className="text-sm text-purple-700 hover:underline">
-              Midnight Musings
-            </a>
-            <a href="/now" className="text-sm text-cyan-700 hover:underline">
-              Now
-            </a>
-            <a href="/about" className="text-sm text-amber-700 hover:underline">
-              About
-            </a>
-          </div>
+        {/* Mini Game */}
+        <div className="mb-20 max-w-2xl mx-auto">
+          <DoodleDrift />
         </div>
 
         {/* Studio Corners */}
         <div className="mb-20 grid gap-8 md:grid-cols-2">
 
-          {/* Doodles */}
           <div
             className="cursor-pointer rounded-3xl border-3 border-dashed border-rose-300/60 bg-white/90 p-8 backdrop-blur-lg shadow-lg"
             onClick={() => (window.location.href = '/doodles')}
@@ -118,7 +177,6 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Writing */}
           <div
             className="cursor-pointer rounded-3xl border-3 border-dashed border-amber-300/60 bg-white/90 p-8 backdrop-blur-lg shadow-lg"
             onClick={() => (window.location.href = '/writing')}
@@ -135,7 +193,6 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Code */}
           <div
             className="cursor-pointer rounded-3xl border-3 border-dashed border-cyan-300/60 bg-white/90 p-8 backdrop-blur-lg shadow-lg"
             onClick={() => (window.location.href = '/code')}
@@ -152,7 +209,6 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Media */}
           <div
             className="cursor-pointer rounded-3xl border-3 border-dashed border-violet-300/60 bg-white/90 p-8 backdrop-blur-lg shadow-lg"
             onClick={() => (window.location.href = '/current')}
@@ -182,7 +238,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* custom border width */}
       <style jsx global>{`
         .border-3 {
           border-width: 3px;
