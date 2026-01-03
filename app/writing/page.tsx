@@ -1,87 +1,74 @@
-import { BookOpen, ArrowLeft } from 'lucide-react';
-import Link from 'next/link';
-import PianoToggle from '@/components/PianoToggle';
-import { getAllWritings } from '@/lib/getWritings';
-
-export default function WritingPage() {
-  const writings = getAllWritings();
-  const latest = writings[0];
-  const older = writings.slice(1);
-
+export default function Home() {
   return (
-    <div className="min-h-screen p-4 md:p-8 text-white">
+    <main className="relative mx-auto max-w-[680px] px-6 py-20">
+      {/* subtle vertical guide */}
+      <div className="absolute left-[-24px] top-0 h-full w-px bg-neutral-200/60" />
 
-      {/* Night sky background */}
-      <div
-        className="fixed inset-0 -z-10 bg-cover bg-center"
-        style={{ backgroundImage: "url('/images/night-sky.jpg')" }}
-      />
-      <div className="fixed inset-0 -z-10 bg-gradient-to-b from-black/40 via-indigo-950/70 to-black/90" />
+      {/* Opening line */}
+      <h1 className="text-3xl font-normal leading-snug mb-16">
+        stay a while. <span className="opacity-70">i’m thinking.</span>
+      </h1>
 
-      <div className="mx-auto max-w-[680px]">
-
-        {/* Back */}
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 mb-12 rounded-full bg-black/40 px-4 py-2 text-sm text-white/80 border border-white/10 backdrop-blur-md hover:bg-black/50"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back
-        </Link>
-
-        {/* Header */}
-        <header className="mb-16">
-          <div className="flex items-center gap-4 mb-5">
-            <div className="rounded-xl bg-black/40 p-3 backdrop-blur-md border border-white/10">
-              <BookOpen className="h-7 w-7 text-indigo-300" />
-            </div>
-            <h1 className="font-['Caveat'] text-5xl font-bold text-white">
-              Midnight Musings
-            </h1>
-          </div>
-
-          <p className="italic text-white/70 max-w-xl">
-            A place for half-formed thoughts, fragments, and quiet honesty.
+      {/* Now block */}
+      <section className="space-y-8 mb-24">
+        <div>
+          <p className="text-xs lowercase tracking-wide opacity-50 mb-1">
+            thinking lately
           </p>
+          <p>
+            how systems shape behavior long before intention shows up
+          </p>
+        </div>
 
-          {/* Piano ambience */}
-          <PianoToggle />
-        </header>
+        <div>
+          <p className="text-xs lowercase tracking-wide opacity-50 mb-1">
+            currently reading
+          </p>
+          <p>
+            <em>The Brothers Karamazov</em> — not for answers, but for endurance
+          </p>
+        </div>
 
-        {/* Latest */}
-        {latest && (
-          <article className="mb-32">
-            <h2 className="font-['Caveat'] text-3xl font-bold text-white mb-3">
-              {latest.title}
-            </h2>
-            <p className="text-sm text-white/50 mb-8 tracking-wide">
-              {latest.date} · {latest.time}
-            </p>
+        <div>
+          <p className="text-xs lowercase tracking-wide opacity-50 mb-1">
+            working on
+          </p>
+          <p>
+            small, incomplete systems that still tell the truth
+          </p>
+        </div>
 
-            <div className="prose prose-invert max-w-none leading-[1.85] whitespace-pre-line text-white/85">
-              {latest.content}
-            </div>
-          </article>
-        )}
+        <div>
+          <p className="text-xs lowercase tracking-wide opacity-50 mb-1">
+            something I keep returning to
+          </p>
+          <p>
+            the discomfort of noticing patterns you can’t unsee
+          </p>
+        </div>
+      </section>
 
-        {/* Older */}
-        <section className="space-y-16">
-          {older.map(writing => (
-            <article key={writing.slug}>
-              <h3 className="font-['Caveat'] text-2xl text-white mb-2">
-                {writing.title}
-              </h3>
-              <p className="text-xs text-white/50 mb-4 tracking-wide">
-                {writing.date} · {writing.time}
-              </p>
-              <p className="text-white/75 leading-relaxed whitespace-pre-line">
-                {writing.content}
-              </p>
-            </article>
-          ))}
-        </section>
+      {/* Writing */}
+      <section>
+        <p className="text-xs lowercase tracking-wide opacity-50 mb-6">
+          some things I’m writing through
+        </p>
 
-      </div>
-    </div>
+        <ul className="space-y-5">
+          <li className="pb-3 border-b border-neutral-200/60 hover:opacity-60 transition">
+            On noticing patterns too late
+          </li>
+          <li className="pb-3 border-b border-neutral-200/60 hover:opacity-60 transition">
+            Systems that pretend to be neutral
+          </li>
+          <li className="pb-3 border-b border-neutral-200/60 hover:opacity-60 transition">
+            Thinking in public without collapsing
+          </li>
+          <li className="hover:opacity-60 transition">
+            Notes from unfinished work
+          </li>
+        </ul>
+      </section>
+    </main>
   );
 }
